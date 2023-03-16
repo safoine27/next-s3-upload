@@ -2,6 +2,7 @@ import { Uploader, useUploader } from './use-uploader';
 
 let upload: Uploader = async (file, params, { onProgress }) => {
   let { url, key, bucket, region, endpoint } = params;
+  let contentMD5 = params?.contentMD5 || null;
   let buffer = await file.arrayBuffer();
 
   await new Promise<void>((resolve, reject) => {
@@ -14,6 +15,9 @@ let upload: Uploader = async (file, params, { onProgress }) => {
     xhr.open('PUT', url, true);
     xhr.setRequestHeader('Content-Type', file.type);
     xhr.setRequestHeader('Cache-Control', 'max-age=630720000');
+    if (contentMD5) {
+      xhr.setRequestHeader('Content-MD5', contentMD5);
+    }
 
     xhr.onreadystatechange = function() {
       if (xhr.readyState === 4) {

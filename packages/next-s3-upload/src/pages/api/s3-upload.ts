@@ -15,6 +15,15 @@ type NextRouteHandler = (
   res: NextApiResponse
 ) => Promise<void>;
 
+type ResponseType = {
+  key: string;
+  bucket: string;
+  region: string;
+  endpoint: string | undefined;
+  url: string;
+  contentMD5?: string;
+}
+
 type Configure = (options: Options) => Handler;
 type Handler = NextRouteHandler & { configure: Configure };
 
@@ -41,7 +50,7 @@ let makeRouteHandler = (options: Options = {}): Handler => {
     } else {
       let uploadType = req.body._nextS3?.strategy;
       let filename = req.body.filename;
-
+      let contentMD5 = req.headers['content-md5'] as string || null;
       let key = options.key
         ? await Promise.resolve(options.key(req, filename))
         : `next-s3-uploads/${uuid()}/${sanitizeKey(filename)}`;
@@ -61,13 +70,20 @@ let makeRouteHandler = (options: Options = {}): Handler => {
           expiresIn: 60 * 60,
         });
 
-        res.status(200).json({
+        let response : ResponseType = {
           key,
           bucket,
           region,
           endpoint,
           url,
-        });
+        }
+        if (contentMD5) {
+          response = {
+            ...response,
+            contentMD5
+          }
+        }
+        res.status(200).json(response);
       } else {
         let stsConfig: STSClientConfig = {
           credentials: {
