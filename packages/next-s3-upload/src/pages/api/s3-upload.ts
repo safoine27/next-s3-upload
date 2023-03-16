@@ -50,7 +50,7 @@ let makeRouteHandler = (options: Options = {}): Handler => {
     } else {
       let uploadType = req.body._nextS3?.strategy;
       let filename = req.body.filename;
-      let contentMD5 = req.headers['content-md5'] as string || null;
+      let contentMD5 = req.headers['content-md5'] as string;
       let key = options.key
         ? await Promise.resolve(options.key(req, filename))
         : `next-s3-uploads/${uuid()}/${sanitizeKey(filename)}`;
@@ -64,14 +64,11 @@ let makeRouteHandler = (options: Options = {}): Handler => {
           Key: key,
           ContentType: filetype,
           CacheControl: 'max-age=630720000',
-          headers: {
-            'content-md5': contentMD5 // Add the Content-MD5 header
-          }
+          ContentMD5: contentMD5,
         };
 
         const url = await getSignedUrl(client, new PutObjectCommand(params), {
           expiresIn: 60 * 60,
-          signableHeaders: new Set("content-md5")
         });
 
         let response : ResponseType = {
