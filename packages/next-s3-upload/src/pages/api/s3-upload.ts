@@ -70,14 +70,13 @@ let makeRouteHandler = (options: Options = {}): Handler => {
           expiresIn: 60 * 60,
           signableHeaders: new Set("Content-MD5")
         });
-        let signedURL = new URL(url);
-        signedURL.searchParams.set("X-Amz-SignedHeaders","content-md5;host") 
+
         let response : ResponseType = {
           key,
           bucket,
           region,
           endpoint,
-          url: signedURL.toString(),
+          url,
         }
         if (contentMD5) {
           response = {
