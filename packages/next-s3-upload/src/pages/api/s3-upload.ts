@@ -64,6 +64,9 @@ let makeRouteHandler = (options: Options = {}): Handler => {
           Key: key,
           ContentType: filetype,
           CacheControl: 'max-age=630720000',
+          headers: {
+            'Content-MD5': contentMD5 // Add the Content-MD5 header
+          }
         };
 
         const url = await getSignedUrl(client, new PutObjectCommand(params), {
