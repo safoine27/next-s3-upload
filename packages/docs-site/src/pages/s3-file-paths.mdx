@@ -8,7 +8,7 @@ import { APIRoute } from "next-s3-upload";
 
 export default APIRoute.configure({
   key(req, filename) {
-    return `my/uploads/path/${filename.toUpperCase()}`;
+    return `my/uploads/path/${filename}`;
   }
 });
 ```
@@ -26,6 +26,23 @@ export default APIRoute.configure({
   }
 });
 ```
+
+## File names
+
+The [AWS guidelines](https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-keys.html) recommend using a specific subset of characters for key names. This library has a `sanitizeKey()` function to remove any characters that could cause problems when stored on S3.
+
+```js
+// pages/api/s3-upload.js
+import { APIRoute, sanitizeKey } from "next-s3-upload";
+
+export default APIRoute.configure({
+  key(req, filename) {
+    return `safe-file-name/${sanitizeKey(filename)}`;
+  }
+});
+```
+
+This function is useful if you are accepting uploads for non-english filenames.
 
 ## File extensions
 

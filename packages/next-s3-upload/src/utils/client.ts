@@ -6,6 +6,7 @@ export function getClient(s3Config?: S3Config) {
 
   let client = new S3Client({
     region: config.region,
+    ...(config.forcePathStyle ? { forcePathStyle: config.forcePathStyle } : {}),
     ...(config.endpoint ? { endpoint: config.endpoint } : {}),
   } as unknown as S3ClientConfig);
 
