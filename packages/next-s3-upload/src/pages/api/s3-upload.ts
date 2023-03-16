@@ -68,6 +68,7 @@ let makeRouteHandler = (options: Options = {}): Handler => {
 
         const url = await getSignedUrl(client, new PutObjectCommand(params), {
           expiresIn: 60 * 60,
+          unsignableHeaders: new Set("Content-MD5")
         });
 
         let response : ResponseType = {
