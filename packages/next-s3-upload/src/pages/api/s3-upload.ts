@@ -65,13 +65,13 @@ let makeRouteHandler = (options: Options = {}): Handler => {
           ContentType: filetype,
           CacheControl: 'max-age=630720000',
           headers: {
-            'Content-MD5': contentMD5 // Add the Content-MD5 header
+            'content-md5': contentMD5 // Add the Content-MD5 header
           }
         };
 
         const url = await getSignedUrl(client, new PutObjectCommand(params), {
           expiresIn: 60 * 60,
-          signableHeaders: new Set("Content-MD5")
+          signableHeaders: new Set("content-md5")
         });
 
         let response : ResponseType = {
